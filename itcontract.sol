@@ -39,4 +39,5 @@ contract Enum {
     function reset() public {
         delete status;
     }
+    
 }
