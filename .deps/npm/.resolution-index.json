@@ -1,0 +1,18 @@
+{
+  "contract-d09a917e43.sol": {
+    "__sources__": {
+      "contract-d09a917e43.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.26;\n\ncontract ArrayRemoveByShifting {\n    // [1, 2, 3] -- remove(1) --> [1, 3, 3] --> [1, 3]\n    // [1, 2, 3, 4, 5, 6] -- remove(2) --> [1, 2, 4, 5, 6, 6] --> [1, 2, 4, 5, 6]\n    // [1, 2, 3, 4, 5, 6] -- remove(0) --> [2, 3, 4, 5, 6, 6] --> [2, 3, 4, 5, 6]\n    // [1] -- remove(0) --> [1] --> []\n\n    uint256[] public arr;\n\n    function remove(uint256 _index) public {\n        require(_index < arr.length, \"index out of bounds\");\n\n        for (uint256 i = _index; i < arr.length - 1; i++) {\n            arr[i] = arr[i + 1];\n        }\n        arr.pop();\n    }\n\n    function test() external {\n        arr = [1, 2, 3, 4, 5];\n        remove(2);\n        // [1, 2, 4, 5]\n        assert(arr[0] == 1);\n        assert(arr[1] == 2);\n        assert(arr[2] == 4);\n        assert(arr[3] == 5);\n        assert(arr.length == 4);\n\n        arr = [1];\n        remove(0);\n        // []\n        assert(arr.length == 0);\n    }\n}\n",
+        "file": "contract-d09a917e43.sol"
+      }
+    }
+  },
+  "itcontract.sol": {
+    "__sources__": {
+      "itcontract.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.26;\n\ncontract Enum {\n    // Enum representing shipping status\n    enum Status {\n        Pending,\n        Shipped,\n        Accepted,\n        Rejected,\n        Canceled\n    }\n\n    // Default value is the first element listed in\n    // definition of the type, in this case \"Pending\"\n    Status public status;\n\n    // Returns uint\n    // Pending  - 0\n    // Shipped  - 1\n    // Accepted - 2\n    // Rejected - 3\n    // Canceled - 4\n    function get() public view returns (Status) {\n        return status;\n    }\n\n    // Update status by passing uint into input\n    function set(Status _status) public {\n        status = _status;\n    }\n\n    // You can update to a specific enum like this\n    function cancel() public {\n        status = Status.Canceled;\n    }\n\n    // delete resets the enum to its first value, 0\n    function reset() public {\n        delete status;\n    }\n}\n",
+        "file": "itcontract.sol"
+      }
+    }
+  }
+}
