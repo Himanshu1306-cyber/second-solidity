@@ -228,7 +228,7 @@ contract signalTipwall{
         require(index<investo.length,"this investment is not created yet");
         if(msg.sender!=investo[index].sender){
             require(msg.value>=investo[index].amt,"u have to pay first to see this message");
-            
+            investo[index]
         }
 
     }
