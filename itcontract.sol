@@ -233,9 +233,9 @@ contract signalTipwall{
             return( 
                 investo[index].sender,
                 investo[index].description,
-    string memory commodities_Name,
-    string memory action,
-    string memory reason,
+                investo[index].commodities_Name,
+                investo[index].action,
+                investo[index].reason,
     uint256 period,)
         }
 
