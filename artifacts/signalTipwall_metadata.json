@@ -1,0 +1,371 @@
+{
+	"compiler": {
+		"version": "0.8.34+commit.80d5c536"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "fieldName",
+						"type": "string"
+					}
+				],
+				"name": "EmptyField",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "notProvide",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "reason",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "period_in_years",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "year",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ret",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "year2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ret2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "year3",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "ret3",
+						"type": "uint256"
+					}
+				],
+				"name": "createMsgforInvest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "Target",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "reason",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "Stop",
+						"type": "uint256"
+					}
+				],
+				"name": "createMsgforTrade",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "investCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "investo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "msgId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address payable",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "commodities_Name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "reason",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "period",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "tradeCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "trde",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "msgId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address payable",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "commodities_Name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "TargetProfit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "StopLoss",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "Reason",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "viewmsgFortrade",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "commodities_Name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "TargetProfit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "StopLoss",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "Reason",
+						"type": "string"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"itcontract.sol": "signalTipwall"
+		},
+		"evmVersion": "osaka",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"itcontract.sol": {
+			"keccak256": "0x524e4a1f12202ac89802f3c19af0bda0d3011c5a2a6948f3957288bfe6331509",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://01f47d9a3d15f822b744cdaf0c0149c485ad45acb355197353cd398b5efe0ac6",
+				"dweb:/ipfs/QmdpkzXHzCGKYwLDHNT5sM7cFAaJ3zm5Ryccb2tW9D7Kff"
+			]
+		}
+	},
+	"version": 1
+}

@@ -1,0 +1,245 @@
+{
+	"compiler": {
+		"version": "0.8.34+commit.80d5c536"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "acceptjob",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "boj",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "jobid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "client",
+						"type": "address"
+					},
+					{
+						"internalType": "address payable",
+						"name": "freelancer",
+						"type": "address"
+					},
+					{
+						"internalType": "address payable",
+						"name": "arbiter",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "enum freelance.status",
+						"name": "currentstatus",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "complete",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "add",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "str",
+						"type": "string"
+					}
+				],
+				"name": "createjob",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "dispute",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "jid",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "jobs",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "jobid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "client",
+						"type": "address"
+					},
+					{
+						"internalType": "address payable",
+						"name": "freelancer",
+						"type": "address"
+					},
+					{
+						"internalType": "address payable",
+						"name": "arbiter",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "enum freelance.status",
+						"name": "currentstatus",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "winnum",
+						"type": "uint256"
+					}
+				],
+				"name": "resolve",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "start",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contract/freelancer.sol": "freelance"
+		},
+		"evmVersion": "osaka",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contract/freelancer.sol": {
+			"keccak256": "0x235bfe08cb3dad14dced320aafad03fb8824245f8d877abfd98f4ed62110a588",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://894c566d18c971189feaf2df625c622925fa0bff4186e87d0794b13b884b361f",
+				"dweb:/ipfs/QmQzpT3r8Wz2duhy3vtnDs62RSqExeAubebhN1cTnsxqTT"
+			]
+		}
+	},
+	"version": 1
+}
