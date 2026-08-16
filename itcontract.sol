@@ -236,7 +236,18 @@ contract signalTipwall{
                 investo[index].commodities_Name,
                 investo[index].action,
                 investo[index].reason,
-    uint256 period,)
+                investo[index].period,
+                investo[index].returnss);
+        }
+        else{
+            return( 
+                investo[index].sender,
+                investo[index].description,
+                investo[index].commodities_Name,
+                investo[index].action,
+                investo[index].reason,
+                investo[index].period,
+                investo[index].returnss);
         }
 
     }
