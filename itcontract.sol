@@ -219,7 +219,7 @@ contract signalTipwall{
 
     }
     function viewmsgForinvest(uint256 index)public payable returns(
-        address sender,
+    address sender,
     string memory description,
     string memory commodities_Name,
     string memory action,
@@ -230,7 +230,13 @@ contract signalTipwall{
         if(msg.sender!=investo[index].sender){
             require(msg.value>=investo[index].amt,"u have to pay first to see this message");
             investo[index].sender.transfer(msg.value);
-            return()
+            return( 
+                investo[index].sender,
+                investo[index].description,
+    string memory commodities_Name,
+    string memory action,
+    string memory reason,
+    uint256 period,)
         }
 
     }
