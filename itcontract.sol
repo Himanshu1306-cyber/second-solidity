@@ -218,6 +218,8 @@ contract signalTipwall{
         }
 
     }
+
+
     function viewmsgForinvest(uint256 index)public payable returns(
     address sender,
     string memory description,
@@ -226,6 +228,8 @@ contract signalTipwall{
     string memory reason,
     uint256 period,
     YearlyReturn[] memory returnss){
+
+
         require(index<investo.length,"this investment is not created yet");
         if(msg.sender!=investo[index].sender){
             require(msg.value>=investo[index].amt,"u have to pay first to see this message");
@@ -239,6 +243,8 @@ contract signalTipwall{
                 investo[index].period,
                 investo[index].returnss);
         }
+
+
         else{
             return( 
                 investo[index].sender,
@@ -248,7 +254,7 @@ contract signalTipwall{
                 investo[index].reason,
                 investo[index].period,
                 investo[index].returnss);
-        }
+        } 
 
     }
     }
