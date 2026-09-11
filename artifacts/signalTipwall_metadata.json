@@ -289,6 +289,67 @@
 						"type": "uint256"
 					}
 				],
+				"name": "viewmsgForinvest",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "commodities_Name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "reason",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "period",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "year",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalReturn",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct signalTipwall.YearlyReturn[]",
+						"name": "returnss",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
 				"name": "viewmsgFortrade",
 				"outputs": [
 					{
@@ -359,11 +420,11 @@
 	},
 	"sources": {
 		"itcontract.sol": {
-			"keccak256": "0x524e4a1f12202ac89802f3c19af0bda0d3011c5a2a6948f3957288bfe6331509",
+			"keccak256": "0xb0addce9d6865af6d57e86ce1d732e07c753f478534b06acf5447a433beba9c7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://01f47d9a3d15f822b744cdaf0c0149c485ad45acb355197353cd398b5efe0ac6",
-				"dweb:/ipfs/QmdpkzXHzCGKYwLDHNT5sM7cFAaJ3zm5Ryccb2tW9D7Kff"
+				"bzz-raw://2c07378b9dba54377903ed4c052a10c14f32fc40b5752b2d81c19b957e81a14d",
+				"dweb:/ipfs/QmWS8Dbne4Ww8Lff9T8XKRqFkpu4oFmu9C4FaZorx4FTMC"
 			]
 		}
 	},

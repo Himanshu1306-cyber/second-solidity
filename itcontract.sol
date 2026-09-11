@@ -46,6 +46,13 @@ contract signalTipwall{
     uint256 public tradeCount;
     uint256 public investCount;
 
+    // trader address => followers address ki array
+    mapping(address=>address[])public traderFollower;
+    mapping (address=>mapping(address=>bool)) private isFollowed;
+
+    mapping(address=>address[]) public investFollower;
+    mapping(address=> mapping(address=>bool)) private isFollower;
+
 
 
     function createMsgforTrade(
@@ -95,6 +102,16 @@ contract signalTipwall{
             Target,
             Stop,
             reason));
+
+            address[] memory followers =traderFollower[msg.sender];
+
+            for(uint256 i=0;i< followers.length;i++){
+                address follower = followers[i];
+                if(counter[follower][msg.sender] >=5 && userVault[follower]>=amount){
+                    userVault[follower]-=amount;
+                    payable(msg.sender).transfer(amount);
+                }
+            }
     
     }
     function createMsgforInvest(uint256 amount,
@@ -155,6 +172,17 @@ contract signalTipwall{
       newinvest.returnss.push(YearlyReturn(year,ret));
       newinvest.returnss.push(YearlyReturn(year2,ret2));
       newinvest.returnss.push(YearlyReturn(year3,ret3));
+
+      address[] memory followers = investFollower[msg.sender]; 
+
+      for(uint256 i=0;i<followers.length;i++){
+        address follower =followers [i];
+        if(counter[follower][msg.sender]>=5 && userVault[follower]>=amount){
+
+            userVault[follower] -=amount;
+            payable (msg.sender).transfer(amount);
+        }
+      }
     }
 
 
@@ -182,6 +210,11 @@ contract signalTipwall{
     //     // else{
             
     //     // }
+
+    mapping (address=>mapping(address=>uint256))public counter;
+    mapping(address=>uint256) public userVault;
+
+
     function viewmsgFortrade(uint256 index)public payable returns(address sender,
     string memory description,
     string memory commodities_Name,
@@ -189,11 +222,33 @@ contract signalTipwall{
     uint256 TargetProfit,
     uint256 StopLoss,
     string memory Reason){
+         
+         uint256 vaultDeposit =0.05 ether;
         
         require(index<trde.length,"this trade is not created yet");
         if(msg.sender!=trde[index].sender){
-             require(msg.value >=trde[index].amt,"you need to pay the fee");
-             trde[index].sender.transfer(msg.value);
+            address trader =trde[index].sender;
+
+
+            if(!isFollowed[trader][msg.sender]){
+                traderFollower[trader].push(msg.sender);
+                isFollowed[trader][msg.sender]=true;
+            }    
+
+
+             counter[msg.sender][trde[index].sender]+=1;
+
+             if(counter[msg.sender][trde[index].sender]>=5){
+             require(msg.value >=trde[index].amt+vaultDeposit,"you need to pay the fee");
+             trde[index].sender.transfer(trde[index].amt);
+             userVault[msg.sender] += vaultDeposit;
+             }
+
+             else{
+                require(msg.value >=trde[index].amt,"uu need to pay first to see this msg");
+                trde[index].sender.transfer(msg.value);
+             }
+
              return(
                 trde[index].sender,
                 trde[index].description,
@@ -203,6 +258,7 @@ contract signalTipwall{
                 trde[index].StopLoss,
                 trde[index].Reason
              );
+             
              
         }
         else{return(trde[index].sender,
@@ -228,12 +284,32 @@ contract signalTipwall{
     string memory reason,
     uint256 period,
     YearlyReturn[] memory returnss){
+        uint256 vaultDeposit= 0.05 ether;
 
 
         require(index<investo.length,"this investment is not created yet");
         if(msg.sender!=investo[index].sender){
-            require(msg.value>=investo[index].amt,"u have to pay first to see this message");
-            investo[index].sender.transfer(msg.value);
+
+            address invester=investo[index].sender;
+
+
+            if(!isFollower[invester][msg.sender]){
+                investFollower[invester].push(msg.sender);
+                isFollowed[invester][msg.sender]=true;
+            }
+
+            counter[msg.sender][investo[index].sender]+=1;
+
+            if(counter[msg.sender][investo[index].sender]>=5){
+                require(msg.value>=investo[index].amt+vaultDeposit,"u have to pay first to see this message and also note that u have to pay the sender amount and 0.05 ether to start mirroring");
+                investo[index].sender.transfer(investo[index].amt);
+                userVault[msg.sender] +=vaultDeposit;
+            }
+            else{
+                    require(msg.value>=investo[index].amt,"u have to pay first to see this message");
+                    investo[index].sender.transfer(msg.value);
+                    }
+            
             return( 
                 investo[index].sender,
                 investo[index].description,
@@ -242,7 +318,9 @@ contract signalTipwall{
                 investo[index].reason,
                 investo[index].period,
                 investo[index].returnss);
-        }
+                }
+                
+        
 
 
         else{
@@ -257,5 +335,9 @@ contract signalTipwall{
         } 
 
     }
+    // function mirror()
+
+
+
     }
 
