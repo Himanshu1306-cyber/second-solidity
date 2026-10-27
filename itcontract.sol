@@ -134,7 +134,7 @@ contract SignalTipwall is ReentrancyGuard {
             _followers[p.sender].push(msg.sender);
         }
 
-        // Interactions
+ 
         (bool ok, ) = payable(p.sender).call{value: p.price}("");
         if (!ok) revert TransferFailed();
 
@@ -149,7 +149,7 @@ contract SignalTipwall is ReentrancyGuard {
         if (!ok) revert TransferFailed();
     }
 
-    // ---------- VAULT ----------
+   
 
     function depositVault() external payable {
         userVault[msg.sender] += msg.value;
@@ -161,9 +161,9 @@ contract SignalTipwall is ReentrancyGuard {
         _refund(msg.sender, amount);
     }
 
-    // ---------- AUTO MIRRORING ----------
+    
 
-    // 5 unique posts dekhne ke baad follower khud mirroring ON kare
+  
     function enableMirroring(address trader, uint256 cap) external {
         require(paidCount[msg.sender][trader] >= UNLOCK_THRESHOLD, "view 5 posts first");
         require(cap > 0, "cap required");
@@ -180,13 +180,13 @@ contract SignalTipwall is ReentrancyGuard {
         emit MirroringDisabled(msg.sender, trader);
     }
 
-    // Off-chain bot is function ko call karega har naye post ke liye
+    
     function chargeMirror(uint256 postId, address follower) external nonReentrant {
         require(postId < posts.length, "no such post");
         Post storage p = posts[postId];
 
         if (!mirroring[follower][p.sender]) revert NotMirroring();
-        // sirf mirroring ON hone ke BAAD ke posts charge ho sakte hain
+       
         require(p.createdAt >= mirrorEnabledAt[follower][p.sender], "old post");
         require(!hasPaid[follower][postId], "already charged");
         require(p.price <= maxPerMessage[follower][p.sender], "above follower cap");
@@ -201,7 +201,7 @@ contract SignalTipwall is ReentrancyGuard {
         emit AutoMirrorCharged(postId, follower, p.sender, p.price);
     }
 
-    // ---------- VIEW HELPERS ----------
+    
 
     function totalPosts() external view returns (uint256) {
         return posts.length;
