@@ -1,343 +1,213 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-contract signalTipwall{
-     error notProvide();
-     error EmptyField(string fieldName);
-     
-    // mapping(address => uint256[]) public msgid;
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-    struct trade{
-        uint256 msgId;
-        address payable sender;
-        address payable receiver;
-        uint256 amt;
-        string description;
-        string commodities_Name;
-        string action;
-        uint256 TargetProfit;
-        uint256 StopLoss;
-        string Reason;
+contract SignalTipwall is ReentrancyGuard {
+    error NotProvided();
+    error EmptyField(string fieldName);
+    error InsufficientPayment();
+    error TransferFailed();
+    error NotMirroring();
 
-    }
-    struct YearlyReturn{
-        uint256 year;
-        uint256 totalReturn;
-    }
+    uint256 public constant UNLOCK_THRESHOLD = 5;
 
+    enum Kind { TRADE, INVEST }
+    enum Action { BUY, SELL }
 
-    struct invest{
-        uint256 msgId;
-        address payable sender;
-        address payable receiver;
-        uint256 amt;
-        string description;
-        string commodities_Name;
-        string action;
-        string reason;
-        uint256 period;
-        YearlyReturn[]returnss;
+    struct Post {
+        address sender;        // trader ya investor
+        Kind kind;             // TRADE ya INVEST
+        Action action;         // BUY / SELL
+        uint256 price;         // message dekhne ki fee (wei)
+        uint256 createdAt;
+        string commodity;      // teaser: GOLD, SILVER, CRUDEOIL...
+        string contentCid;     // IPFS CID: encrypted entry/target/stop/returns/reason
+        bytes32 detailsHash;   // keccak256 of the encrypted JSON
     }
 
+    Post[] public posts;
 
-    trade[] public trde;
-    invest[] public investo;
- 
-    uint256 public tradeCount;
-    uint256 public investCount;
+    // user => postId => paid?
+    mapping(address => mapping(uint256 => bool)) public hasPaid;
+    // follower => trader => unique paid posts ka count
+    mapping(address => mapping(address => uint256)) public paidCount;
 
-    // trader address => followers address ki array
-    mapping(address=>address[])public traderFollower;
-    mapping (address=>mapping(address=>bool)) private isFollowed;
+    // mirroring settings (follower => trader)
+    mapping(address => mapping(address => bool)) public mirroring;
+    mapping(address => mapping(address => uint256)) public mirrorEnabledAt;
+    mapping(address => mapping(address => uint256)) public maxPerMessage;
 
-    mapping(address=>address[]) public investFollower;
-    mapping(address=> mapping(address=>bool)) private isFollower;
+    // follower ka vault balance (auto-pay ke liye)
+    mapping(address => uint256) public userVault;
 
+    // trader => followers (sirf off-chain bot ke jaanne ke liye)
+    mapping(address => address[]) private _followers;
+    mapping(address => mapping(address => bool)) private _isFollower;
 
+    event PostCreated(
+        uint256 indexed postId,
+        address indexed sender,
+        Kind kind,
+        Action action,
+        string commodity,
+        uint256 price,
+        string contentCid,
+        bytes32 detailsHash
+    );
+    event PostUnlocked(uint256 indexed postId, address indexed user);
+    event MirroringEnabled(address indexed follower, address indexed trader, uint256 cap);
+    event MirroringDisabled(address indexed follower, address indexed trader);
+    event AutoMirrorCharged(
+        uint256 indexed postId,
+        address indexed follower,
+        address indexed trader,
+        uint256 amount
+    );
 
-    function createMsgforTrade(
-    uint256 amount,
-    string memory name,
-    string memory description,
-    uint256 Target,
-    string memory action,
-    string memory reason,
-    uint256 Stop) public {
-            if(amount == 0){
-                revert notProvide();
-            }
-            if(bytes(name).length==0){
-                revert EmptyField("fill first this");
-            }
-            if(bytes(action).length==0){
-                revert EmptyField("fill first this");
-            }
-            if(bytes(reason).length==0){
-                revert EmptyField("fill first this");
-            }
-            if(bytes(description).length==0){
-                revert EmptyField("fill first this");
-            }            
-            if(Stop == 0){
-                revert notProvide();
-            }
-            if(Target == 0){
-                revert notProvide();
-            }
-            if(Target == Stop){
-                revert EmptyField("both are same");
-            }
-        
+    // ---------- POST BANANA ----------
 
+    function _createPost(
+        Kind kind,
+        Action action,
+        uint256 price,
+        string calldata commodity,
+        string calldata contentCid,
+        bytes32 detailsHash
+    ) internal {
+        if (price == 0) revert NotProvided();
+        if (bytes(commodity).length == 0) revert EmptyField("commodity");
+        if (bytes(contentCid).length == 0) revert EmptyField("content");
+        if (detailsHash == bytes32(0)) revert EmptyField("hash");
 
-        tradeCount++;
-        trde.push(trade(
-            tradeCount,
-            payable (msg.sender),
-            payable (address(0)),
-            amount,
-            description,
-            name,
-            action,
-            Target,
-            Stop,
-            reason));
+        posts.push(Post(
+            msg.sender, kind, action, price, block.timestamp,
+            commodity, contentCid, detailsHash
+        ));
 
-            address[] memory followers =traderFollower[msg.sender];
-
-            for(uint256 i=0;i< followers.length;i++){
-                address follower = followers[i];
-                if(counter[follower][msg.sender] >=5 && userVault[follower]>=amount){
-                    userVault[follower]-=amount;
-                    payable(msg.sender).transfer(amount);
-                }
-            }
-    
-    }
-    function createMsgforInvest(uint256 amount,
-    string memory description,
-    string memory name,
-    string memory action,
-    string memory reason,
-    uint256 period_in_years,
-    uint256 year,
-    uint256 ret,
-    uint256 year2,
-    uint256 ret2,
-    uint256 year3,
-    uint256 ret3)public{
-
-        if(amount == 0){
-            revert notProvide();
-        }
-        if(bytes(name).length == 0){
-            revert EmptyField("fill this first");
-        }
-        if(bytes(description).length ==0){
-            revert EmptyField("fill this first");
-        }
-        if(bytes(action).length==0){
-            revert EmptyField("fill this first");
-        }
-        if(bytes(reason).length==0){
-            revert EmptyField("fill this first");
-        }
-        if(period_in_years==0){
-            revert notProvide();
-        }
-        if(year ==0||year2==0||year3==0){
-            revert notProvide();
-        }
-        if(ret==0||ret2==0||ret3==0){
-            revert notProvide();
-        }
-
-
-
-      investCount++;
-
-      //struct ke andar jab koi struct push karna ho to uske liye storage pehle define karni padti hai
-      invest storage newinvest=investo.push();
-      newinvest.msgId=investCount;
-      newinvest.sender=payable(msg.sender);
-      newinvest.receiver=payable(address(0));
-      newinvest.amt=amount;
-      newinvest.description=description;
-      newinvest.commodities_Name=name;
-      newinvest.action=action;
-      newinvest.reason=reason;
-      newinvest.period=period_in_years;
-
-      //struct ke andar aise dusra struct push karte hai
-      newinvest.returnss.push(YearlyReturn(year,ret));
-      newinvest.returnss.push(YearlyReturn(year2,ret2));
-      newinvest.returnss.push(YearlyReturn(year3,ret3));
-
-      address[] memory followers = investFollower[msg.sender]; 
-
-      for(uint256 i=0;i<followers.length;i++){
-        address follower =followers [i];
-        if(counter[follower][msg.sender]>=5 && userVault[follower]>=amount){
-
-            userVault[follower] -=amount;
-            payable (msg.sender).transfer(amount);
-        }
-      }
-    }
-
-
-    // function viewMsgforTrade(uint256 index)public payable returns(address sender,
-    //        string memory description,
-    //        string memory commodities_Name,
-    //        string memory action,
-    //        uint256 Target,
-    //        uint256 Stop,
-    //        string memory reason){
-    //     //    uint256 msgId= index;                    
-    //     //    msgid[sender][index];
-    //        if(msg.sender!=trade[index].sender||msg.sender!=invest[index].sender){
-    //         require(trade[index].sender.transfer(trade[index].amt),"u have to pay first to see this msg");
-    //        }
-           
-    //         return (trade[index].sender,
-    //        trade[index].description,
-    //        trade[index].commodities_Name,
-    //        trade[index].action,
-    //        trade[index].Target,
-    //        trade[index].Stop,
-    //        trade[index].reason);
-    //     }
-    //     // else{
-            
-    //     // }
-
-    mapping (address=>mapping(address=>uint256))public counter;
-    mapping(address=>uint256) public userVault;
-
-
-    function viewmsgFortrade(uint256 index)public payable returns(address sender,
-    string memory description,
-    string memory commodities_Name,
-    string memory action,
-    uint256 TargetProfit,
-    uint256 StopLoss,
-    string memory Reason){
-         
-         uint256 vaultDeposit =0.05 ether;
-        
-        require(index<trde.length,"this trade is not created yet");
-        if(msg.sender!=trde[index].sender){
-            address trader =trde[index].sender;
-
-
-            if(!isFollowed[trader][msg.sender]){
-                traderFollower[trader].push(msg.sender);
-                isFollowed[trader][msg.sender]=true;
-            }    
-
-
-             counter[msg.sender][trde[index].sender]+=1;
-
-             if(counter[msg.sender][trde[index].sender]>=5){
-             require(msg.value >=trde[index].amt+vaultDeposit,"you need to pay the fee");
-             trde[index].sender.transfer(trde[index].amt);
-             userVault[msg.sender] += vaultDeposit;
-             }
-
-             else{
-                require(msg.value >=trde[index].amt,"uu need to pay first to see this msg");
-                trde[index].sender.transfer(msg.value);
-             }
-
-             return(
-                trde[index].sender,
-                trde[index].description,
-                trde[index].commodities_Name,
-                trde[index].action,
-                trde[index].TargetProfit,
-                trde[index].StopLoss,
-                trde[index].Reason
-             );
-             
-             
-        }
-        else{return(trde[index].sender,
-                trde[index].description,
-                trde[index].commodities_Name,
-                trde[index].action,
-                trde[index].TargetProfit,
-                trde[index].StopLoss,
-                trde[index].Reason
-
+        emit PostCreated(
+            posts.length - 1, msg.sender, kind, action,
+            commodity, price, contentCid, detailsHash
         );
+    }
 
+    // Trader: entry/target/stop/reason encrypted JSON me hain
+    function postTrade(
+        string calldata commodity,
+        Action action,
+        uint256 price,
+        string calldata contentCid,
+        bytes32 detailsHash
+    ) external {
+        _createPost(Kind.TRADE, action, price, commodity, contentCid, detailsHash);
+    }
+
+    // Investor: period/yearly returns/reason encrypted JSON me hain
+    function postInvest(
+        string calldata commodity,
+        Action action,
+        uint256 price,
+        string calldata contentCid,
+        bytes32 detailsHash
+    ) external {
+        _createPost(Kind.INVEST, action, price, commodity, contentCid, detailsHash);
+    }
+
+    // ---------- PAY KARKE DEKHNA ----------
+
+    function unlock(uint256 postId) external payable nonReentrant {
+        require(postId < posts.length, "no such post");
+        Post storage p = posts[postId];
+
+        if (msg.sender == p.sender || hasPaid[msg.sender][postId]) {
+            if (msg.value > 0) _refund(msg.sender, msg.value);
+            return;
+        }
+        if (msg.value < p.price) revert InsufficientPayment();
+
+        // Effects
+        hasPaid[msg.sender][postId] = true;
+        paidCount[msg.sender][p.sender] += 1;
+
+        if (!_isFollower[p.sender][msg.sender]) {
+            _isFollower[p.sender][msg.sender] = true;
+            _followers[p.sender].push(msg.sender);
         }
 
+        // Interactions
+        (bool ok, ) = payable(p.sender).call{value: p.price}("");
+        if (!ok) revert TransferFailed();
+
+        uint256 extra = msg.value - p.price;
+        if (extra > 0) _refund(msg.sender, extra);
+
+        emit PostUnlocked(postId, msg.sender);
     }
 
-
-    function viewmsgForinvest(uint256 index)public payable returns(
-    address sender,
-    string memory description,
-    string memory commodities_Name,
-    string memory action,
-    string memory reason,
-    uint256 period,
-    YearlyReturn[] memory returnss){
-        uint256 vaultDeposit= 0.05 ether;
-
-
-        require(index<investo.length,"this investment is not created yet");
-        if(msg.sender!=investo[index].sender){
-
-            address invester=investo[index].sender;
-
-
-            if(!isFollower[invester][msg.sender]){
-                investFollower[invester].push(msg.sender);
-                isFollowed[invester][msg.sender]=true;
-            }
-
-            counter[msg.sender][investo[index].sender]+=1;
-
-            if(counter[msg.sender][investo[index].sender]>=5){
-                require(msg.value>=investo[index].amt+vaultDeposit,"u have to pay first to see this message and also note that u have to pay the sender amount and 0.05 ether to start mirroring");
-                investo[index].sender.transfer(investo[index].amt);
-                userVault[msg.sender] +=vaultDeposit;
-            }
-            else{
-                    require(msg.value>=investo[index].amt,"u have to pay first to see this message");
-                    investo[index].sender.transfer(msg.value);
-                    }
-            
-            return( 
-                investo[index].sender,
-                investo[index].description,
-                investo[index].commodities_Name,
-                investo[index].action,
-                investo[index].reason,
-                investo[index].period,
-                investo[index].returnss);
-                }
-                
-        
-
-
-        else{
-            return( 
-                investo[index].sender,
-                investo[index].description,
-                investo[index].commodities_Name,
-                investo[index].action,
-                investo[index].reason,
-                investo[index].period,
-                investo[index].returnss);
-        } 
-
-    }
-    // function mirror()
-
-
-
+    function _refund(address to, uint256 amount) internal {
+        (bool ok, ) = payable(to).call{value: amount}("");
+        if (!ok) revert TransferFailed();
     }
 
+    // ---------- VAULT ----------
+
+    function depositVault() external payable {
+        userVault[msg.sender] += msg.value;
+    }
+
+    function withdrawVault(uint256 amount) external nonReentrant {
+        require(userVault[msg.sender] >= amount, "low balance");
+        userVault[msg.sender] -= amount;
+        _refund(msg.sender, amount);
+    }
+
+    // ---------- AUTO MIRRORING ----------
+
+    // 5 unique posts dekhne ke baad follower khud mirroring ON kare
+    function enableMirroring(address trader, uint256 cap) external {
+        require(paidCount[msg.sender][trader] >= UNLOCK_THRESHOLD, "view 5 posts first");
+        require(cap > 0, "cap required");
+
+        mirroring[msg.sender][trader] = true;
+        mirrorEnabledAt[msg.sender][trader] = block.timestamp;
+        maxPerMessage[msg.sender][trader] = cap;
+
+        emit MirroringEnabled(msg.sender, trader, cap);
+    }
+
+    function disableMirroring(address trader) external {
+        mirroring[msg.sender][trader] = false;
+        emit MirroringDisabled(msg.sender, trader);
+    }
+
+    // Off-chain bot is function ko call karega har naye post ke liye
+    function chargeMirror(uint256 postId, address follower) external nonReentrant {
+        require(postId < posts.length, "no such post");
+        Post storage p = posts[postId];
+
+        if (!mirroring[follower][p.sender]) revert NotMirroring();
+        // sirf mirroring ON hone ke BAAD ke posts charge ho sakte hain
+        require(p.createdAt >= mirrorEnabledAt[follower][p.sender], "old post");
+        require(!hasPaid[follower][postId], "already charged");
+        require(p.price <= maxPerMessage[follower][p.sender], "above follower cap");
+        require(userVault[follower] >= p.price, "vault low");
+
+        hasPaid[follower][postId] = true;
+        userVault[follower] -= p.price;
+
+        (bool ok, ) = payable(p.sender).call{value: p.price}("");
+        if (!ok) revert TransferFailed();
+
+        emit AutoMirrorCharged(postId, follower, p.sender, p.price);
+    }
+
+    // ---------- VIEW HELPERS ----------
+
+    function totalPosts() external view returns (uint256) {
+        return posts.length;
+    }
+
+    function followersOf(address trader) external view returns (address[] memory) {
+        return _followers[trader];
+    }
+}
