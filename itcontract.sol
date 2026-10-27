@@ -65,7 +65,7 @@ contract SignalTipwall is ReentrancyGuard {
         uint256 amount
     );
 
-    // ---------- POST BANANA ----------
+   
 
     function _createPost(
         Kind kind,
@@ -91,7 +91,7 @@ contract SignalTipwall is ReentrancyGuard {
         );
     }
 
-    // Trader: entry/target/stop/reason encrypted JSON me hain
+    
     function postTrade(
         string calldata commodity,
         Action action,
@@ -102,7 +102,7 @@ contract SignalTipwall is ReentrancyGuard {
         _createPost(Kind.TRADE, action, price, commodity, contentCid, detailsHash);
     }
 
-    // Investor: period/yearly returns/reason encrypted JSON me hain
+   
     function postInvest(
         string calldata commodity,
         Action action,
@@ -113,7 +113,7 @@ contract SignalTipwall is ReentrancyGuard {
         _createPost(Kind.INVEST, action, price, commodity, contentCid, detailsHash);
     }
 
-    // ---------- PAY KARKE DEKHNA ----------
+  
 
     function unlock(uint256 postId) external payable nonReentrant {
         require(postId < posts.length, "no such post");
